@@ -329,6 +329,7 @@ $things = @(
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "C:\Program Files (x86)\Evernote\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("EvernoteTray"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Excel"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("KeePass"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("notepad++", "C:\Program Files\Notepad++\notepad++.exe"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "%USERPROFILE%\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
