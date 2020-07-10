@@ -1,5 +1,5 @@
 # shortcuts
-These are from my collection of PowerShell and CMD (batch) scripts and shortcuts I use all the time. Many of them were created programmatically using the "keycuts" app I wrote (in its own repo).
+These are from my collection of PowerShell and CMD (batch) scripts and shortcuts I use all the time. Many of them were created programmatically using the [keycuts](https://github.com/andrewralon/keycuts) app I wrote (in its own repo).
 
 ## Topics
 Here's a rough breakdown, in no particular order....
