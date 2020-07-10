@@ -399,6 +399,7 @@ MigrationBackup/
 !play.bat
 !pm.bat
 !programs.bat
+!proxy.bat
 !rb.bat
 !rd.bat
 !recyclebin.bat
@@ -406,6 +407,7 @@ MigrationBackup/
 !regeditopen.bat
 !servicenow.bat
 !Set-NetworkAdapterState.ps1
+!Set-ProxyFileState.ps1
 !Set-VpnState.ps1
 !setvariable.bat
 !setvariablescustom.bat
@@ -417,8 +419,6 @@ MigrationBackup/
 !tfs.bat
 !timeto.bat
 !timeto.ps1
-!toggleproxy.bat
-!toggleproxy.ps1
 !trimcharacters.bat
 !vpn.bat
 !w.bat

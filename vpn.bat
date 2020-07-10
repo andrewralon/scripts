@@ -1,6 +1,6 @@
 @ECHO OFF
 REM vpn.bat
-REM Purpose:  Run the vpn.ps1 PowerShell script, which toggles the windows
+REM Purpose:  Run the Set-VpnState.ps1 PowerShell script, which toggles the windows
 REM           service for GlobalProtect VPN (PanGPS) based on the given input.
 REM Requires: PowerShell, NirCMD, Administrator privileges
 REM Usage:    vpn ([state])
