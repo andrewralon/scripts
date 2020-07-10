@@ -11,6 +11,7 @@
 
 param(
 	[string] $State = "restart"
+	, [switch] $NoDelay
 )
 
 $name = "Wi-Fi"
@@ -58,5 +59,10 @@ else {
 }
 
 Write-Output ""
-Write-Output "Exiting in $secondsToWait seconds...."
-Start-Sleep -Seconds $secondsToWait
+Write-Output "Done"
+Write-Output ""
+
+if (!$NoDelay) {
+	Write-Output "Exiting in $secondsToWait seconds...."
+	Start-Sleep -Seconds $secondsToWait
+}

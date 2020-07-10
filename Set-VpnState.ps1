@@ -12,6 +12,7 @@
 
 param(
 	[string] $State = $null
+	, [switch] $NoDelay
 )
 
 function Get-ServiceScript {
@@ -66,5 +67,8 @@ else {
 Write-Output ""
 Write-Output "Done"
 Write-Output ""
-Write-Output "Exiting in $secondsToWait seconds...."
-Start-Sleep -Seconds $secondsToWait
+
+if (!$NoDelay) {
+	Write-Output "Exiting in $secondsToWait seconds...."
+	Start-Sleep -Seconds $secondsToWait
+}

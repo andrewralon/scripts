@@ -4,6 +4,10 @@
 # Usage:   Set-ProxyFileState
 # Example: Set-ProxyFileState
 
+param(
+	[switch] $NoDelay
+)
+
 # $proxyURL = "https://proxy.company.com/proxyfile.pac"
 $proxyURL = $env:PROXYURL
 $keyName = "AutoConfigURL"
@@ -36,5 +40,10 @@ $internetSettingKey.Close()
 $registryKey.Close()
 
 Write-Output ""
-Write-Output "Exiting in $secondsToWait seconds...."
-Start-Sleep -Seconds $secondsToWait
+Write-Output "Done"
+Write-Output ""
+
+if (!$NoDelay) {
+	Write-Output "Exiting in $secondsToWait seconds...."
+	Start-Sleep -Seconds $secondsToWait
+}

@@ -19,9 +19,10 @@ param(
 #region CLASSES AND ENUMS
 
 enum Type {
-	Service
 	App
+	CommandString
 	Script
+	Service
 }
 
 enum Action {
@@ -42,6 +43,18 @@ class Thing {
 		, [bool] $start
 		, [bool] $asAdmin
 		, [App] $object
+	) {
+		$this.Action = $action
+		$this.Start = $start
+		$this.AsAdmin = $asAdmin
+		$this.Object = $object
+	}
+
+	Thing (
+		[Action] $action
+		, [bool] $start
+		, [bool] $asAdmin
+		, [CommandString] $object
 	) {
 		$this.Action = $action
 		$this.Start = $start
@@ -107,22 +120,32 @@ class App {
 	}
 }
 
+class CommandString {
+	[string] $CommandString
+
+	CommandString(
+		[string] $commandString
+	) {
+		$this.CommandString = $commandString
+	}
+}
+
 class Script {
-	[string] $Command
+	[string] $File
 	[string] $Arguments
 
 	Script(
-		[string] $command
+		[string] $file
 	) {
-		$this.Command = $command
+		$this.File = $file
 		$this.Arguments = $null
 	}
 	
 	Script(
-		[string] $command
+		[string] $file
 		, [string] $arguments
 	) {
-		$this.Command = $command
+		$this.File = $file
 		$this.Arguments = $arguments
 	}
 }
@@ -240,6 +263,25 @@ function Invoke-StartApps {
 	}
 }
 
+function Invoke-RunCommands {
+	param(
+		[Thing[]] $CommandsToRun
+	)
+
+	if ($CommandsToRun) {
+		Write-Output "`n * Running $($CommandsToRun.Count) script(s)...."
+	}
+
+	$index = 1
+	foreach ($command in $CommandsToRun) {
+
+		Write-Output "$(($index++)) - $($command.Object.CommandString)"
+
+		Invoke-Expression -Command "$($command.Object.CommandString)"
+	}
+}
+
+
 function Invoke-RunScripts {
 	param(
 		[Thing[]] $ScriptsToRun
@@ -252,13 +294,13 @@ function Invoke-RunScripts {
 	$index = 1
 	foreach ($script in $ScriptsToRun) {
 
-		Write-Output "$(($index++)) - $($script.Object.Command) $($script.Object.Arguments)"
+		Write-Output "$(($index++)) - $($script.Object.File) $($script.Object.Arguments)"
 
 		if ($script.Object.Arguments) {
-			Invoke-Expression -Command "$($script.Object.Command) $($script.Object.Arguments)"
+			Invoke-Expression -Command "& '$($script.Object.File)' $($script.Object.Arguments)"
 		}
 		else {
-			Invoke-Expression -Command "$($script.Object.Command)" 
+			Invoke-Expression -Command "& '$($script.Object.File)'" 
 		}
 	}
 }
@@ -277,7 +319,9 @@ $things = @(
 
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "%USERPROFILE%\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
+	, [Thing]::new([Action]::Play, $false, $false, [App]::new("GitHubDesktop"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "C:\Program Files (x86)\Origin\Origin.exe"))
+	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Postman"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Snap Camera"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "C:\Program Files (x86)\Steam\steam.exe"))
 
@@ -290,14 +334,15 @@ $things = @(
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "%USERPROFILE%\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("RemoteDesktopManager64", "C:\Program Files (x86)\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Slack"))
+	, [Thing]::new([Action]::Work, $false, $true, [App]::new("Taskmgr"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "%USERPROFILE%\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
-	, [Thing]::new([Action]::Battery, $false, $false, [App]::new("Slack"))
 	
-	, [Thing]::new([Action]::Play, $true, $false, [Script]::new("multimonitortool /disable 3"))
-	, [Thing]::new([Action]::Play, $true, $false, [Script]::new("ipconfig /flushdns"))
-	, [Thing]::new([Action]::Work, $true, $false, [Script]::new("multimonitortool /enable 3"))
-	, [Thing]::new([Action]::Battery, $true, $false, [Script]::new(".\Set-VpnState.ps1", "off"))
-	, [Thing]::new([Action]::Battery, $true, $false, [Script]::new(".\Set-NetworkAdapterState.ps1", "off"))
+	, [Thing]::new([Action]::Play, $true, $false, [CommandString]::new("multimonitortool /disable 3"))
+	, [Thing]::new([Action]::Play, $true, $false, [CommandString]::new("ipconfig /flushdns"))
+	, [Thing]::new([Action]::Work, $true, $false, [CommandString]::new("multimonitortool /enable 3"))
+
+	, [Thing]::new([Action]::Battery, $true, $true, [Script]::new("Set-NetworkAdapterState.ps1", "off -NoDelay"))
 )
 
 #endregion VARIABLES
