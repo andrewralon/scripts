@@ -1,0 +1,1 @@
+if [[ $(pwd) = $HOME ]]; then cd C:/dev; fi
