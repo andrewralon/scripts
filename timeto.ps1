@@ -1,11 +1,12 @@
 # timeto.ps1
 # Purpose:  Closes non-related apps and services, then opens
 #           related apps and services based on the given input.
-# Requires: PowerShell, Administrator privileges
+# Requires: PowerShell, Administrator privileges, MultiMonitorTool.exe for display changes
 # Usage:    timeto [action]
 # Examples: timeto work
 #           timeto play
 #           timeto chill
+#           timeto battery
 # TO DO:
 # * Resolve environment variables like '%programfiles(x86)%'
 
@@ -27,6 +28,7 @@ enum Action {
 	Work
 	Play
 	Chill
+	Battery
 }
 
 class Thing {
@@ -250,8 +252,14 @@ function Invoke-RunScripts {
 	$index = 1
 	foreach ($script in $ScriptsToRun) {
 
-		Write-Output "$(($index++)) - $($script.Object.Name)"
-		Invoke-Expression $script.Object.Name
+		Write-Output "$(($index++)) - $($script.Object.Command) $($script.Object.Arguments)"
+
+		if ($script.Object.Arguments) {
+			Invoke-Expression -Command "$($script.Object.Command) $($script.Object.Arguments)"
+		}
+		else {
+			Invoke-Expression -Command "$($script.Object.Command)" 
+		}
 	}
 }
 
@@ -283,11 +291,13 @@ $things = @(
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("RemoteDesktopManager64", "C:\Program Files (x86)\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "%USERPROFILE%\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
-
+	, [Thing]::new([Action]::Battery, $false, $false, [App]::new("Slack"))
+	
 	, [Thing]::new([Action]::Play, $true, $false, [Script]::new("multimonitortool /disable 3"))
 	, [Thing]::new([Action]::Play, $true, $false, [Script]::new("ipconfig /flushdns"))
-
 	, [Thing]::new([Action]::Work, $true, $false, [Script]::new("multimonitortool /enable 3"))
+	, [Thing]::new([Action]::Battery, $true, $false, [Script]::new(".\Set-VpnState.ps1", "off"))
+	, [Thing]::new([Action]::Battery, $true, $false, [Script]::new(".\Set-NetworkAdapterState.ps1", "off"))
 )
 
 #endregion VARIABLES
@@ -324,12 +334,12 @@ if ([Action].GetEnumNames() -icontains $Action) {
 		foreach ($thing in $things) {
 			Write-Output "  $(($index++)) of $($things.Count)"
 			Write-Output "Start:     '$($thing.Start)'"
-		    Write-Output "AsAdmin:   '$($thing.AsAdmin)'"
+			Write-Output "AsAdmin:   '$($thing.AsAdmin)'"
 			Write-Output "Name:      '$($thing.Object.Name)'"
 			Write-Output "Object:    '$($thing.Object)'"
-		    Write-Output "Action:    '$($thing.Action)'"
-		    Write-Output "Path:      '$($thing.Object.Path)'"
-		    Write-Output "Arguments: '$($thing.Object.Arguments)'"
+			Write-Output "Action:    '$($thing.Action)'"
+			Write-Output "Path:      '$($thing.Object.Path)'"
+			Write-Output "Arguments: '$($thing.Object.Arguments)'"
 			Write-Output "Command:   '$($thing.Object.Command)'"
 		}
 			
@@ -360,6 +370,5 @@ else {
 Write-Output ""
 Write-Output "Exiting in $secondsToWait seconds...."
 Start-Sleep -Seconds $secondsToWait
-# Pause
 
 #endregion LOGIC

@@ -14,5 +14,5 @@ REM   wifi restart
 REM Notes: 
 REM * If no state is given, "restart" is assumed. This is not a toggle.
 
-nircmdc.exe elevate powershell.exe -Command "& 'Restart-NetworkAdapter.ps1' %*"
+nircmdc.exe elevate powershell.exe -Command "& 'Set-NetworkAdapterState.ps1' %*"
 REM EXIT

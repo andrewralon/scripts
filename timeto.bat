@@ -8,6 +8,7 @@ REM Usage:    timeto [action]
 REM Examples: timeto work
 REM           timeto play
 REM           timeto chill
+REM           timeto battery
 REM Notes:
 REM * The powershell script must be run twice, once as user and once as admin.
 
