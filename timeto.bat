@@ -3,7 +3,7 @@ REM timeto.bat
 REM Purpose:  Run the timeto.ps1 PowerShell script, which closes non-related 
 REM           apps and services, then opens related apps and services based on
 REM           the given input.
-REM Requires: PowerShell, NirCMD.exe, Administrator privileges
+REM Requires: PowerShell, NirCMDc.exe, Administrator privileges
 REM Usage:    timeto [action]
 REM Examples: timeto work
 REM           timeto play
