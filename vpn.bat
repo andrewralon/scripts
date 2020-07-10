@@ -4,6 +4,7 @@ REM Purpose:  Run the vpn.ps1 PowerShell script, which toggles the windows
 REM           service for GlobalProtect VPN (PanGPS) based on the given input.
 REM Requires: PowerShell, NirCMD, Administrator privileges
 REM Usage:    vpn ([state])
+REM           vpn (restart|off|stop|on|start)
 REM Examples: 
 REM   vpn
 REM   vpn on

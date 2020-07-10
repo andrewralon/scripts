@@ -1,14 +1,14 @@
-# vpn.ps1
+# Set-VpnState.ps1
 # Purpose:  Toggle, start or stop the windows service "PanGPS" (GlobalProtect VPN)
 #           based on the given input.
 # Requires: PowerShell, Administrator privileges
-# Usage:    vpn ([state])
-#           vpn (restart|off|stop|on|start)
+# Usage:    Set-VpnState ([state])
+#           Set-VpnState (restart|off|stop|on|start)
 # Examples: 
-#   vpn
-#   vpn on
-#   vpn off
-#   vpn restart
+#   Set-VpnState
+#   Set-VpnState on
+#   Set-VpnState off
+#   Set-VpnState restart
 
 param(
 	[string] $State = $null
