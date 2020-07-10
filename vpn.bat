@@ -10,6 +10,5 @@ REM   vpn on
 REM   vpn off
 REM   vpn restart
 
-SET FILENAME=%~n0
-nircmdc.exe elevate powershell.exe -Command "& '%FILENAME%.ps1' %*"
+nircmdc.exe elevate powershell.exe -Command "& 'Set-VpnState.ps1' %*"
 REM EXIT

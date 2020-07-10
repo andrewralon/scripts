@@ -405,6 +405,8 @@ MigrationBackup/
 !RDP.bat
 !regeditopen.bat
 !servicenow.bat
+!Set-NetworkAdapterState.ps1
+!Set-VpnState.ps1
 !setvariable.bat
 !setvariablescustom.bat
 !shortcuts.bat
@@ -419,6 +421,6 @@ MigrationBackup/
 !toggleproxy.ps1
 !trimcharacters.bat
 !vpn.bat
-!vpn.ps1
 !w.bat
+!wifi.bat
 !wiki.bat

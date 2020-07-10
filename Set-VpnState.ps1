@@ -3,7 +3,7 @@
 #           based on the given input.
 # Requires: PowerShell, Administrator privileges
 # Usage:    vpn ([state])
-#           vpn [off|stop|on|start|restart]
+#           vpn (restart|off|stop|on|start)
 # Examples: 
 #   vpn
 #   vpn on
