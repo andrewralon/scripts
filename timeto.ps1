@@ -7,8 +7,6 @@
 #           timeto play
 #           timeto chill
 #           timeto battery
-# TO DO:
-# * Resolve environment variables like %USERPROFILE% and %PROGRAMFILES(x86)%
 
 param(
 	[string] $Action = ""
@@ -256,24 +254,24 @@ $things = @(
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "$env:USERPROFILE\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
-	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
-	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "C:\Program Files (x86)\Origin\Origin.exe"))
+	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
+	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "${env:ProgramFiles(x86)}\Origin\Origin.exe"))
 	, [Thing]::new([Action]::Play, $false, $true, [App]::new("OriginWebHelperService"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Snap Camera"))
-	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "C:\Program Files (x86)\Steam\steam.exe"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe", "/home"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "C:\Program Files (x86)\Evernote\Evernote\Evernote.exe"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("EvernoteTray"))
+	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "${env:ProgramFiles(x86)}\Steam\steam.exe"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("EvernoteTray"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Excel"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("GitHubDesktop"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("KeePass"))
-	, [Thing]::new([Action]::Work, $false, $false, [App]::new("notepad++", "C:\Program Files\Notepad++\notepad++.exe"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("notepad++", "$env:ProgramFiles\Notepad++\notepad++.exe"))
 	, [Thing]::new([Action]::Work, $false, $true, [App]::new("OfficeClickToRun"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "$env:USERPROFILE\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "${env:ProgramFiles(x86)}\Microsoft Office\root\Office16\OUTLOOK.EXE"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Postman"))
-	, [Thing]::new([Action]::Work, $false, $false, [App]::new("RemoteDesktopManager64", "C:\Program Files (x86)\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("RemoteDesktopManager64", "${env:ProgramFiles(x86)}\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Work, $false, $true, [App]::new("Taskmgr"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
