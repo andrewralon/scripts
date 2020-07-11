@@ -25,13 +25,10 @@ $service = Get-ServiceScript $serviceName
 $secondsToWait = 5
 
 if ($service) {
-
 	Write-Output "$serviceName status was '$($service.Status)'"
-	Write-Output ""
 
 	if ($State) {
 		Write-Output "Desired state: '$State'"
-		Write-Output ""
 
 		if ($State -like "off" -or $State -like "stop") {
 			Write-Output "Stopping now...."
@@ -41,7 +38,7 @@ if ($service) {
 			Write-Output "Starting now...."
 			Start-Service $serviceName #-Force
 		}
-		elseif ($State -like "re*") {
+		elseif ($State -like "restart") {
 			Write-Output "Restarting now...."
 			Restart-Service $serviceName #-Force
 		}

@@ -15,6 +15,7 @@ param(
 )
 
 $name = "Wi-Fi"
+$backupTerm = "wireless"
 $adapter = Get-NetAdapter -Name $name -ErrorAction SilentlyContinue
 $secondsToWait = 5
 
@@ -23,26 +24,19 @@ if (!$adapter) {
 	Write-Output "Searching for 'wireless' in the interface descriptions...."
 
 	$adapters = Get-NetAdapter -ErrorAction SilentlyContinue
-	$adapter = $adapters.Where( { $_.InterfaceDescription -like "*wireless*" } ) | Select-Object -first 1
+	$adapter = $adapters.Where( { $_.InterfaceDescription -like "*$backupTerm*" } ) | Select-Object -first 1
 
 	if ($adapter) {
 		Write-Output "Found adapter: '$($adapter.Name)'.... w00t!"
 	}
-
-	Write-Output ""
 }
 
 if ($adapter) {	
 	Write-Output "$($adapter.Name) status was '$($adapter.Status)'"
 	Write-Output "Desired state: '$State'"
-	Write-Output ""
 
-	if (($State -like "on" -or $State -like "start") -and $adapter.Status -like "Up")
-	{
-		Write-Output "Adapter is already '$($adapter.Status)'...."
-	}
-	elseif (($State -like "off" -or $State -like "stop") -and $adapter.Status -like "Disabled")
-	{
+	if ((($State -like "on" -or $State -like "start") -and $adapter.Status -like "Up") -or 
+		(($State -like "off" -or $State -like "stop") -and $adapter.Status -like "Disabled")) {
 		Write-Output "Adapter is already '$($adapter.Status)'...."
 	}
 	else {
@@ -58,9 +52,7 @@ if ($adapter) {
 		
 		Start-Sleep -Seconds $secondsToWait
 		
-		$adapter = Get-NetAdapter -Name $adapter.Name -ErrorAction SilentlyContinue
-		
-		Write-Output ""
+		$adapter = Get-NetAdapter -Name $adapter.Name -ErrorAction SilentlyContinue		
 		Write-Output "$($adapter.Name) status is now '$($adapter.Status)'"
 	}
 }

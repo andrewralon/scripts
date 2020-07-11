@@ -142,7 +142,6 @@ function Invoke-KillServices {
 
 	$index = 1
 	foreach ($service in $ServicesToKill) {
-
 		Write-Output "$(($index++)) - $($service.Object.Name)"
 
 		if (Get-Service $service.Object.Name -ErrorAction SilentlyContinue) {
@@ -162,7 +161,6 @@ function Invoke-StartServices {
 
 	$index = 1
 	foreach ($service in $ServicesToStart) {
-
 		Write-Output "$(($index++)) - $($service.Object.Name)"
 
 		if (Get-Service $service.Object.Name -ErrorAction SilentlyContinue) {
@@ -184,7 +182,6 @@ function Invoke-KillApps {
 	foreach ($app in $AppsToKill) {
 
 		Write-Output "$(($index++)) - $($app.Object.Name)"
-
 		$processes = Get-Process $app.Object.Name -ErrorAction SilentlyContinue
 
 		try {
@@ -215,11 +212,9 @@ function Invoke-StartApps {
 
 	$index = 1
 	foreach ($app in $AppsToStart) {
-
 		Write-Output "$(($index++)) - $($app.Object.Name)"
 
 		if (!(Get-Process $app.Object.Name -ErrorAction SilentlyContinue)) {
-
 			if ($app.Object.Arguments) {
 				Start-Process $app.Object.Path $app.Object.Arguments
 			}
@@ -241,9 +236,7 @@ function Invoke-RunCommands {
 
 	$index = 1
 	foreach ($command in $CommandsToRun) {
-
 		Write-Output "$(($index++)) - $($command.Object.Command)"
-
 		Invoke-Expression -Command "$($command.Object.Command)"
 	}
 }
