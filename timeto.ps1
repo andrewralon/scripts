@@ -254,6 +254,7 @@ $things = @(
 	[Thing]::new([Action]::Work, $true, $true, [Service]::new("PanGPS"))
 
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
+	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "$env:USERPROFILE\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "C:\Program Files (x86)\Origin\Origin.exe"))
@@ -292,7 +293,6 @@ $things = @(
 #region LOGIC
 
 if ([Action].GetEnumNames() -icontains $Action) {
-
 	$servicesToKill = $things.Where( { 
 			$_.Object -like [Service] -and 
 			$_.Action -notlike $Action -and 
