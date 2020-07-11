@@ -180,10 +180,10 @@ function Invoke-DoAllTheThings {
 	$index = 1
 	foreach ($thing in $thingsToProcess) {
 
-		$verb = & { if ($thing.Action -like $Action) { "Starting" } else { "Killing" } }
-		$verb = & { if ($thing.Action -like $Action -and - !$thing.Start) { "Leaving" } else { $verb } }
-		$verb = & { if ($thing.Action -like $Action -and $thing.Object -like [Cmd]) { "Running" } else { $verb } }
-		$title = & { if ($thing.Object.Name) { $thing.Object.Name } else { $thing.Object.Command } }
+		$verb = if ($thing.Action -like $Action) { "Starting" } else { "Killing" }
+		$verb = if ($thing.Action -like $Action -and - !$thing.Start) { "Leaving" } else { $verb }
+		$verb = if ($thing.Action -like $Action -and $thing.Object -like [Cmd]) { "Running" } else { $verb }
+		$title = if ($thing.Object.Name) { $thing.Object.Name } else { $thing.Object.Command }
 		$noun = switch ($thing.Object) {
 			"App" { "  app  "; break; }
 			"Cmd" { "command"; break; }
@@ -238,9 +238,9 @@ function Invoke-DoAllTheThings {
 function Invoke-KillServices {
 	param( [Thing[]] $ServicesToKill )
 
-	foreach ($service in $ServicesToKill) {
-		if (Get-Service $service.Object.Name -ErrorAction SilentlyContinue) {
-			Stop-Service $service.Object.Name
+	foreach ($thing in $ServicesToKill) {
+		if (Get-Service $thing.Object.Name -ErrorAction SilentlyContinue) {
+			Stop-Service $thing.Object.Name
 		}
 	}
 }
@@ -248,9 +248,9 @@ function Invoke-KillServices {
 function Invoke-StartServices {
 	param( [Thing[]] $ServicesToStart )
 
-	foreach ($service in $ServicesToStart) {
-		if (Get-Service $service.Object.Name -ErrorAction SilentlyContinue) {
-			Start-Service $service.Object.Name
+	foreach ($thing in $ServicesToStart) {
+		if (Get-Service $thing.Object.Name -ErrorAction SilentlyContinue) {
+			Start-Service $thing.Object.Name
 		}
 	}
 }
@@ -259,7 +259,7 @@ function Invoke-KillApps {
 	param( [Thing[]] $AppsToKill )
 
 	foreach ($thing in $AppsToKill) {
-		$processes = Get-Process $thing.Name -ErrorAction SilentlyContinue
+		$processes = Get-Process $thing.Object.Name -ErrorAction SilentlyContinue
 		
 		foreach ($process in $processes) {
 			try {
@@ -271,7 +271,7 @@ function Invoke-KillApps {
 		}
 			
 		# Close any processes that didn't respond to process.CloseMainWindow()
-		$process = Get-Process $thing.Name -ErrorAction SilentlyContinue
+		$process = Get-Process $thing.Object.Name -ErrorAction SilentlyContinue
 		if ($process) {
 			try {
 				Stop-Process -Name $process.Name
@@ -286,13 +286,13 @@ function Invoke-KillApps {
 function Invoke-StartApps {
 	param( [Thing[]] $AppsToStart )
 
-	foreach ($app in $AppsToStart) {
-		if (!(Get-Process $app.Object.Name -ErrorAction SilentlyContinue)) {
-			if ($app.Object.Path -and $app.Object.Arguments) {
-				Start-Process $app.Object.Path $app.Object.Arguments
+	foreach ($thing in $AppsToStart) {
+		if (!(Get-Process $thing.Object.Name -ErrorAction SilentlyContinue)) {
+			if ($thing.Object.Path -and $thing.Object.Arguments) {
+				Start-Process $thing.Object.Path $thing.Object.Arguments
 			}
-			elseif ($app.Object.Path) {
-				Start-Process $app.Object.Path
+			elseif ($thing.Object.Path) {
+				Start-Process $thing.Object.Path
 			}
 			else {
 				Write-Warning "Unable to start. Path is empty!"
@@ -304,8 +304,8 @@ function Invoke-StartApps {
 function Invoke-RunCommands {
 	param( [Thing[]] $CommandsToRun )
 
-	foreach ($command in $CommandsToRun) {
-		Invoke-Expression -Command "$($command.Object.Command)"
+	foreach ($thing in $CommandsToRun) {
+		Invoke-Expression -Command "$($thing.Object.Command)"
 	}
 }
 
@@ -356,12 +356,17 @@ $things = @(
 	, [Thing]::new([Action]::Battery, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 off -NoDelay"))
 
 	, [Thing]::new([Action]::Chill, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 2"))
 	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
 
 	, [Thing]::new([Action]::Play, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
+	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 1"))
 	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 3"))
 	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("ipconfig /flushdns"))
 
+	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
+	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 2"))
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
 	, [Thing]::new([Action]::Work, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
 )
@@ -385,10 +390,10 @@ if ([Action].GetEnumNames() -icontains $Action) {
 			Write-Output "  $(($index++)) of $($thingsToDo.Count) - $($thing.Name)"
 			Write-Output "Action:    '$($thing.Action)'"
 			Write-Output "Start:     '$($thing.Start)'"
-			& { if ($thing.AsAdmin) { Write-Output "AsAdmin:   '$($thing.AsAdmin)'" } }
+			if ($thing.AsAdmin) { Write-Output "AsAdmin:   '$($thing.AsAdmin)'" }
 			Write-Output "Object:    '$($thing.Object)'"
-			& { if ($object.Path) { Write-Output "Path:      '$($object.Path)'" } }
-			& { if ($object.Arguments) { Write-Output "Arguments: '$($object.Arguments)'" } }
+			if ($object.Path) { Write-Output "Path:      '$($object.Path)'" }
+			if ($object.Arguments) { Write-Output "Arguments: '$($object.Arguments)'" }
 		}
 		
 		Write-Output ""
