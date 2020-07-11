@@ -20,8 +20,8 @@ param(
 enum Action {
 	Battery
 	Chill
-	Work
 	Play
+	Work
 }
 
 enum Type {
@@ -122,7 +122,7 @@ class Cmd {
 
 class Service {
 	[string] $Name
-        
+
 	Service (
 		[string] $name
 	) {
@@ -320,6 +320,7 @@ $things = @(
 
 	[Thing]::new([Action]::Work, $true, $true, [Service]::new("PanGPS"))
 
+	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("EvernoteTray"))
@@ -337,7 +338,7 @@ $things = @(
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "${env:ProgramFiles(x86)}\Steam\steam.exe"))
 
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Beyond Compare"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", "--profile-directory='Default'"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("EvernoteTray"))
@@ -420,7 +421,6 @@ else {
 	Write-Output ""
 	Write-Output "Exiting in $secondsToWait seconds...."
 	Start-Sleep -Seconds $secondsToWait
-	Pause
 }
 
 #endregion LOGIC
