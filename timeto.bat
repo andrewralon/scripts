@@ -18,7 +18,7 @@ REM Run as user
 START powershell.exe -Command "& '%FILENAME%.ps1' %*"
 
 REM Run as admin
-START nircmdc.exe elevate powershell.exe -Command "& '%FILENAME%.ps1' %* -Admin"
+START nircmdc.exe elevate powershell.exe -Command "& '%FILENAME%.ps1' -Admin %*"
 
 REM PAUSE
 REM EXIT
