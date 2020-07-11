@@ -64,11 +64,10 @@ else {
 	Write-Output "Service not found: '$serviceName'"
 }
 
-Write-Output ""
-Write-Output "Done"
-Write-Output ""
-
 if (!$NoDelay) {
+	Write-Output ""
+	Write-Output "Done"
+	Write-Output ""
 	Write-Output "Exiting in $secondsToWait seconds...."
 	Start-Sleep -Seconds $secondsToWait
 }

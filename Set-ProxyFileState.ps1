@@ -31,7 +31,6 @@ else {
 	# Set the internet proxy url to the original value
 	$internetSettingKey.SetValue($keyName, $proxyURL, [Microsoft.Win32.RegistryValueKind]::String)
     Write-Output "Proxy Automatic Configuration script has been ENABLED"
-    Write-Output ""
     Write-Output "    $proxyURL"
 }
 
@@ -39,11 +38,10 @@ else {
 $internetSettingKey.Close()
 $registryKey.Close()
 
-Write-Output ""
-Write-Output "Done"
-Write-Output ""
-
 if (!$NoDelay) {
+	Write-Output ""
+	Write-Output "Done"
+	Write-Output ""
 	Write-Output "Exiting in $secondsToWait seconds...."
 	Start-Sleep -Seconds $secondsToWait
 }

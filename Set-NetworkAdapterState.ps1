@@ -37,32 +37,41 @@ if ($adapter) {
 	Write-Output "Desired state: '$State'"
 	Write-Output ""
 
-	if ($State -like "off" -or $State -like "stop" -or $State -like "restart") {
-		Write-Output "Disabling now...."
-		Disable-NetAdapter -Name $adapter.Name -Confirm:$false
-	} 
-	
-	if ($State -like "on" -or $State -like "start" -or $State -like "restart") {
-		Write-Output "Enabling now...."
-		Enable-NetAdapter -Name $adapter.Name -Confirm:$false
+	if (($State -like "on" -or $State -like "start") -and $adapter.Status -like "Up")
+	{
+		Write-Output "Adapter is already '$($adapter.Status)'...."
 	}
-
-	Start-Sleep -Seconds $secondsToWait
-
-	$adapter = Get-NetAdapter -Name $adapter.Name -ErrorAction SilentlyContinue
-
-	Write-Output ""
-	Write-Output "$($adapter.Name) status is now '$($adapter.Status)'"
+	elseif (($State -like "off" -or $State -like "stop") -and $adapter.Status -like "Disabled")
+	{
+		Write-Output "Adapter is already '$($adapter.Status)'...."
+	}
+	else {
+		if ($State -like "off" -or $State -like "stop" -or $State -like "restart") {
+			Write-Output "Disabling now...."
+			Disable-NetAdapter -Name $adapter.Name -Confirm:$false
+		} 
+		
+		if ($State -like "on" -or $State -like "start" -or $State -like "restart") {
+			Write-Output "Enabling now...."
+			Enable-NetAdapter -Name $adapter.Name -Confirm:$false
+		}
+		
+		Start-Sleep -Seconds $secondsToWait
+		
+		$adapter = Get-NetAdapter -Name $adapter.Name -ErrorAction SilentlyContinue
+		
+		Write-Output ""
+		Write-Output "$($adapter.Name) status is now '$($adapter.Status)'"
+	}
 }
 else {
 	Write-Output "Adapter not found: '$name''"
 }
 
-Write-Output ""
-Write-Output "Done"
-Write-Output ""
-
 if (!$NoDelay) {
+	Write-Output ""
+	Write-Output "Done"
+	Write-Output ""
 	Write-Output "Exiting in $secondsToWait seconds...."
 	Start-Sleep -Seconds $secondsToWait
 }

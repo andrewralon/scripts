@@ -8,7 +8,7 @@
 #           timeto chill
 #           timeto battery
 # TO DO:
-# * Resolve environment variables like '%programfiles(x86)%'
+# * Resolve environment variables like %USERPROFILE% and %PROGRAMFILES(x86)%
 
 param(
 	[string] $Action = ""
@@ -20,8 +20,7 @@ param(
 
 enum Type {
 	App
-	CommandString
-	Script
+	Cmd
 	Service
 }
 
@@ -54,7 +53,7 @@ class Thing {
 		[Action] $action
 		, [bool] $start
 		, [bool] $asAdmin
-		, [CommandString] $object
+		, [Cmd] $object
 	) {
 		$this.Action = $action
 		$this.Start = $start
@@ -67,18 +66,6 @@ class Thing {
 		, [bool] $start
 		, [bool] $asAdmin
 		, [Service] $object
-	) {
-		$this.Action = $action
-		$this.Start = $start
-		$this.AsAdmin = $asAdmin
-		$this.Object = $object
-	}
-
-	Thing (
-		[Action] $action
-		, [bool] $start
-		, [bool] $asAdmin
-		, [Script] $object
 	) {
 		$this.Action = $action
 		$this.Start = $start
@@ -120,33 +107,13 @@ class App {
 	}
 }
 
-class CommandString {
-	[string] $CommandString
+class Cmd {
+	[string] $Command
 
-	CommandString(
-		[string] $commandString
+	Cmd(
+		[string] $command
 	) {
-		$this.CommandString = $commandString
-	}
-}
-
-class Script {
-	[string] $File
-	[string] $Arguments
-
-	Script(
-		[string] $file
-	) {
-		$this.File = $file
-		$this.Arguments = $null
-	}
-	
-	Script(
-		[string] $file
-		, [string] $arguments
-	) {
-		$this.File = $file
-		$this.Arguments = $arguments
+		$this.Command = $command
 	}
 }
 
@@ -269,39 +236,15 @@ function Invoke-RunCommands {
 	)
 
 	if ($CommandsToRun) {
-		Write-Output "`n * Running $($CommandsToRun.Count) script(s)...."
+		Write-Output "`n * Running $($CommandsToRun.Count) command(s)...."
 	}
 
 	$index = 1
 	foreach ($command in $CommandsToRun) {
 
-		Write-Output "$(($index++)) - $($command.Object.CommandString)"
+		Write-Output "$(($index++)) - $($command.Object.Command)"
 
-		Invoke-Expression -Command "$($command.Object.CommandString)"
-	}
-}
-
-
-function Invoke-RunScripts {
-	param(
-		[Thing[]] $ScriptsToRun
-	)
-
-	if ($ScriptsToRun) {
-		Write-Output "`n * Running $($ScriptsToRun.Count) script(s)...."
-	}
-
-	$index = 1
-	foreach ($script in $ScriptsToRun) {
-
-		Write-Output "$(($index++)) - $($script.Object.File) $($script.Object.Arguments)"
-
-		if ($script.Object.Arguments) {
-			Invoke-Expression -Command "& '$($script.Object.File)' $($script.Object.Arguments)"
-		}
-		else {
-			Invoke-Expression -Command "& '$($script.Object.File)'" 
-		}
+		Invoke-Expression -Command "$($command.Object.Command)"
 	}
 }
 
@@ -317,33 +260,38 @@ $things = @(
 
 	[Thing]::new([Action]::Work, $true, $true, [Service]::new("PanGPS"))
 
-	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "%USERPROFILE%\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
+	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
+	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "$env:USERPROFILE\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "C:\Program Files (x86)\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
-	, [Thing]::new([Action]::Play, $false, $false, [App]::new("GitHubDesktop"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "C:\Program Files (x86)\Origin\Origin.exe"))
-	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Postman"))
+	, [Thing]::new([Action]::Play, $false, $true, [App]::new("OriginWebHelperService"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Snap Camera"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "C:\Program Files (x86)\Steam\steam.exe"))
-
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "C:\Program Files (x86)\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "C:\Program Files (x86)\Evernote\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("EvernoteTray"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Excel"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("KeePass"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("notepad++", "C:\Program Files\Notepad++\notepad++.exe"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "%USERPROFILE%\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Excel"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("GitHubDesktop"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("KeePass"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("notepad++", "C:\Program Files\Notepad++\notepad++.exe"))
+	, [Thing]::new([Action]::Work, $false, $true, [App]::new("OfficeClickToRun"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "$env:USERPROFILE\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("RemoteDesktopManager64", "C:\Program Files (x86)\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
-	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Slack"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Postman"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("RemoteDesktopManager64", "C:\Program Files (x86)\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
+	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Slack", "$env:USERPROFILE\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Work, $false, $true, [App]::new("Taskmgr"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "%USERPROFILE%\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "$env:USERPROFILE\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
 	
-	, [Thing]::new([Action]::Play, $true, $false, [CommandString]::new("multimonitortool /disable 3"))
-	, [Thing]::new([Action]::Play, $true, $false, [CommandString]::new("ipconfig /flushdns"))
-	, [Thing]::new([Action]::Work, $true, $false, [CommandString]::new("multimonitortool /enable 3"))
-
-	, [Thing]::new([Action]::Battery, $true, $true, [Script]::new("Set-NetworkAdapterState.ps1", "off -NoDelay"))
+	, [Thing]::new([Action]::Battery, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 off -NoDelay"))
+	, [Thing]::new([Action]::Chill, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
+	, [Thing]::new([Action]::Play, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
+	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 3"))
+	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("ipconfig /flushdns"))
+	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
+	, [Thing]::new([Action]::Work, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
 )
 
 #endregion VARIABLES
@@ -370,8 +318,8 @@ if ([Action].GetEnumNames() -icontains $Action) {
 			$_.Action -like $Action -and 
 			$_.AsAdmin -like $Admin -and 
 			$_.Start } )
-	$scriptsToRun = $things.Where( { 
-			$_.Object -like [Script] -and 
+	$commandsToRun = $things.Where( { 
+			$_.Object -like [Cmd] -and 
 			$_.Action -like $Action -and 
 			$_.AsAdmin -like $Admin } )
 
@@ -395,7 +343,7 @@ if ([Action].GetEnumNames() -icontains $Action) {
 		Write-Output "servicesToStart: '$($servicesToStart.Count)'"
 		Write-Output "appsToKill:      '$($appsToKill.Count)'"
 		Write-Output "appsToStart:     '$($appsToStart.Count)'"
-		Write-Output "scriptsToRun:    '$($scriptsToRun.Count)'"
+		Write-Output "commandsToRun:   '$($commandsToRun.Count)'"
 		Write-Output "--"
 	}
 
@@ -406,7 +354,7 @@ if ([Action].GetEnumNames() -icontains $Action) {
 	Invoke-StartServices $servicesToStart
 	Invoke-KillApps $appsToKill
 	Invoke-StartApps $appsToStart
-	Invoke-RunScripts $scriptsToRun
+	Invoke-RunCommands $commandsToRun
 }
 else {
 	Write-Output "** TIME TO.... $($Action)??? **"
