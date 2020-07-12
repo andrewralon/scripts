@@ -1,4 +1,5 @@
 # Send-EmailViaSMTP.ps1
+
 # Force TLS 1.2 assuming older protocols are disabled
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
