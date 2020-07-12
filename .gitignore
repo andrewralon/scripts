@@ -405,6 +405,8 @@ MigrationBackup/
 !recyclebin.bat
 !RDP.bat
 !regeditopen.bat
+!Send-EmailViaMandrill.ps1
+!Send-EmailViaSMTP.ps1
 !servicenow.bat
 !Set-NetworkAdapterState.ps1
 !Set-ProxyFileState.ps1
