@@ -378,6 +378,7 @@ MigrationBackup/
 !gdig.bat
 !gdrive.bat
 !gdriveweb.bat
+!Get-IPs.bat
 !Get-OutlookInbox.ps1
 !ghd.bat
 !gm.bat
