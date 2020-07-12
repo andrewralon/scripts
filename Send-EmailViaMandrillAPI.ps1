@@ -1,4 +1,4 @@
-# Send-EmailViaMandrill.ps1
+# Send-EmailViaMandrillAPI.ps1
 # References:
 #  * https://stackoverflow.com/questions/38012564/how-do-i-correctly-convert-a-hashtable-to-json-in-powershell
 
@@ -13,13 +13,13 @@ $fromEmail = "firstname.lastname@company.com"
 $fromName = "Lastname, Firstname"
 $to = @( "firstname1.lastname2@company.com" )
 $subject = "Email Subject"
-$emailBody = "HTML Body"
+$body = "HTML Body"
 
 $requestBody = @{
 	key     = "$apiKey"
 	message = @{
 		subject    = "$subject"
-		html       = "$emailBody"
+		html       = "$body"
 		from_email = "$fromEmail"
 		from_name  = "$fromName"
 		to         = @(
