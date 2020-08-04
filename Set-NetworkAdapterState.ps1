@@ -35,7 +35,7 @@ if ($adapter) {
 	Write-Output "$($adapter.Name) status was '$($adapter.Status)'"
 	Write-Output "Desired state: '$State'"
 
-	if ((($State -like "on" -or $State -like "start") -and $adapter.Status -like "Up") -or 
+	if ((($State -like "on" -or $State -like "start") -and ($adapter.Status -like "Up" -or $adapter.Status -like "Disconnected")) -or 
 		(($State -like "off" -or $State -like "stop") -and $adapter.Status -like "Disabled")) {
 		Write-Output "Adapter is already '$($adapter.Status)'...."
 	}
