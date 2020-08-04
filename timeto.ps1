@@ -362,8 +362,8 @@ $things = @(
 	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
 
 	, [Thing]::new([Action]::Play, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
-	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 1"))
-	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 3"))
+	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 1"))
+	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 3"))
 	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("ipconfig /flushdns"))
 
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
