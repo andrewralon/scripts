@@ -431,6 +431,9 @@ MigrationBackup/
 !timeto.bat
 !timeto.ps1
 !trimcharacters.bat
+!Unblock-WindowsUpdate.bat
+!Unblock-WindowsUpdate.ps1
+!Unblock-WindowsUpdate.reg
 !vpn.bat
 !w.bat
 !wifi.bat
