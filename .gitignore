@@ -409,6 +409,8 @@ MigrationBackup/
 !Restart-ComputerAndSendEmail.ps1
 !recyclebin.bat
 !Restart-WindowsService.ps1
+!Repair-DockerInstall.ps1
+!Repair-Wsl2Internet.ps1
 !regeditopen.bat
 !Send-EmailViaMandrillAPI.ps1
 !Send-EmailViaMandrillSMTP.ps1
