@@ -29,6 +29,7 @@ Stop-Service wuauserv
 Write-Output "`n 3. Update registry to disable the custom WU server"
 Write-Output "file:  '$($filename).reg'"
 & reg import .\$($filename).reg
+#REG ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU /V UseWUServer /t DWORD /d 00000000 /f
 
 Pop-Location
 
