@@ -20,5 +20,9 @@ $gateway_ip = $gateway_ips[1].IPAddress
 Write-Output "Gateway (local WSL adapter) IP: $gateway_ip"
 bash -c "sudo ifconfig eth0 netmask 255.255.240.0"
 bash -c "sudo ip route add default via $gateway_ip"
+Write-Output " * Copy IP to bottom of /etc/resolv.conf"
+bash -c "sudo echo 'nameserver $gateway_ip' >> /etc/resolv.conf"
+Write-Output " * Run 'Enable-PSRemoting -SkipNetworkProfileCheck -Force'"
+Enable-PSRemoting -SkipNetworkProfileCheck -Force
 
 Write-Output " * Done"
