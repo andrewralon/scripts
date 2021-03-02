@@ -14,7 +14,7 @@ $keyName = "AutoConfigURL"
 $secondsToWait = 5
 
 # Get base registry key for accessing internet settings
-$registryKey = Get-ChildItem -Path "HKCU:\Software\Microsoft\Windows\" | Where-Object { $_.Name -like "*CurrentVersion" }
+$registryKey = Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion"
 
 # Open the internet settings registry key and make it writable
 $internetSettingKey = $registryKey.OpenSubKey("Internet Settings", $true)
