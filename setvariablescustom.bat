@@ -20,5 +20,7 @@ REM CALL SETVARIABLE ORG "company"
 REM ECHO(
 REM CALL SETVARIABLE SERVICENOWURL "https://company.service-now.com"
 REM ECHO(
+REM CALL SETVARIABLE SERVICENOW2URL "https://companytest.service-now.com"
+REM ECHO (
 REM CALL SETVARIABLE PROXYURL "http://company.com/proxyfile.pac"
 REM ECHO(

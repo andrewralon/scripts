@@ -7,6 +7,8 @@ REM  4) Type "Win+R" and "snow" or "snow [change request number]"
 
 REM THIS WORKS:
 REM https://company.service-now.com/nav_to.do?uri=%2Fchange_request.do%3Fsysparm_query%3Dnumber%3DCHG0192129
+REM THIS WORKS FOR CHANGE TASKS / CTASKS:
+REM https://company.service-now.com/nav_to.do?uri=%2Fchange_task.do%3Fsysparm_query%3Dnumber%3DCTASK0356139
 
 REM SET URLBASE=https://company.service-now.com
 SET URLBASE=%SERVICENOWURL%
