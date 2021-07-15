@@ -412,6 +412,8 @@ MigrationBackup/
 !Repair-DockerInstall.ps1
 !Repair-Wsl2Internet.ps1
 !regeditopen.bat
+!runps.bat
+!runps-test.ps1
 !Send-EmailViaMandrillAPI.ps1
 !Send-EmailViaMandrillSMTP.ps1
 !Send-EmailViaSMTP.ps1
