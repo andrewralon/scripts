@@ -34,6 +34,8 @@ IF "%~1"=="ops" GOTO :OpsTicket
 IF "%~1"=="OPS" GOTO :OpsTicket
 IF "%~1"=="cr" GOTO :OpsChangeRequestTicket
 IF "%~1"=="CR" GOTO :OpsChangeRequestTicket
+IF "%~1"=="ec" GOTO :OpsEmergencyChangeTicket
+IF "%~1"=="EC" GOTO :OpsEmergencyChangeTicket
 IF "%~1"=="core" GOTO :CoreTicket
 IF "%~1"=="CORE" GOTO :CoreTicket
 IF "%~1"=="gn1" GOTO :G1Ticket
@@ -62,8 +64,13 @@ GOTO :EOF
 
 :OpsChangeRequestTicket
 SET PID=11900
-REM SET ISSUETYPEID=13202
 SET ISSUETYPEID=12002
+START %JIRAURL%/secure/CreateIssueDetails!init.jspa?pid=%PID%^&issuetype=%ISSUETYPEID%^&reporter=%JIRAUSER%^&assignee=%JIRAUSER%^&priority=6%ASSIGNEDDEV%%REQUESTOR%%INFRASTRUCTURE%
+GOTO :EOF
+
+:OpsEmergencyChangeTicket
+SET PID=11900
+SET ISSUETYPEID=12300
 START %JIRAURL%/secure/CreateIssueDetails!init.jspa?pid=%PID%^&issuetype=%ISSUETYPEID%^&reporter=%JIRAUSER%^&assignee=%JIRAUSER%^&priority=6%ASSIGNEDDEV%%REQUESTOR%%INFRASTRUCTURE%
 GOTO :EOF
 
