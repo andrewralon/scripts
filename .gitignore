@@ -364,6 +364,7 @@ MigrationBackup/
 *.zip
 
 # CUSTOM INCLUDES
+!HostsFile/*
 !apphostconfig.txt
 !chrome*.bat
 !d.bat
@@ -428,6 +429,8 @@ MigrationBackup/
 !snow.bat
 !speak.bat
 !speak.ps1
+!swaphosts.bat
+!swaphosts.ps1
 !ss.bat
 !tfs.bat
 !timeto.bat
@@ -440,4 +443,6 @@ MigrationBackup/
 !w.bat
 !wifi.bat
 !wiki.bat
+
+# CUSTOM EXCLUDES - JUST IN CASE
 targets.csv
