@@ -80,7 +80,7 @@ $swapBACKUP = "$($swapBACKUP)_$($date)_$($fileIndex)"
 
 #region LOGIC
 
-Write-Host " * Inputs"
+Write-Host " * Inputs (change in .ps1 file)"
 Write-Host "A:    '$swapA'"
 Write-Host "B:    '$swapB'"
 
