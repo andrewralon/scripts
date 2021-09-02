@@ -3,6 +3,8 @@
 # PURPOSE:  Swap / toggle / replace hosts files in C:\Windows\System32\drivers\etc
 
 param(
+	[string] $fileA = "hosts_BLANK",
+	[string] $fileB = "hosts_GN-RC3-2019",
 	[switch] $fromCMD
 )
 
@@ -56,16 +58,12 @@ function Set-HostsFile {
 
 #region VARIABLES
 
-# Variables - CHANGE AS NEEDED
-# swapA is the first file to toggle
-$swapA = "hosts_BLANK"
-# swapB is the second file to toggle
-$swapB = "hosts_GN-RC2-2019"
-
 # Variables - DO NOT CHANGE
+# swapA is the first file to toggle
+$swapA = $fileA
+# swapB is the second file to toggle
+$swapB = $fileB
 $path = "C:\Windows\System32\drivers\etc"
-$old = ""
-$new = ""
 $swap0 = "hosts"
 $swapBLANK = "hosts_BLANK"
 $swapBACKUP = "hosts_BACKUP"
@@ -75,6 +73,8 @@ while (Test-Path ("$($path)\$($swapBACKUP)_$($date)_$($fileIndex)")) {
 	$fileIndex += 1
 }
 $swapBACKUP = "$($swapBACKUP)_$($date)_$($fileIndex)"
+$old = ""
+$new = ""
 
 #endregion VARIABLES
 
