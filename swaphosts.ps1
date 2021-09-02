@@ -3,8 +3,8 @@
 # PURPOSE:  Swap / toggle / replace hosts files in C:\Windows\System32\drivers\etc
 
 param(
-	[string] $fileA = "hosts_BLANK",
-	[string] $fileB = "hosts_GN-RC3-2019",
+	[string] $fileA = "hosts_GN-RC3-2019",
+	[string] $fileB = "hosts_BLANK",
 	[switch] $fromCMD
 )
 
