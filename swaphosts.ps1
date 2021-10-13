@@ -3,8 +3,8 @@
 # PURPOSE:  Swap / toggle / replace hosts files in C:\Windows\System32\drivers\etc
 
 param(
-	[string] $fileA = "hosts_GN-RC3-2019",
-	[string] $fileB = "hosts_BLANK",
+	[string] $fileA = "G1-RC-2019",
+	[string] $fileB = "BLANK",
 	[switch] $fromCMD
 )
 
@@ -54,6 +54,26 @@ function Set-HostsFile {
 	}
 }
 
+function Start-PauseAndSleep {
+	param(
+		[int] $Seconds = 5,
+		[int] $PollingFrequencyInMilliseconds = 100
+	)
+	
+	Write-Host "Press any key to continue... Exiting in $seconds seconds."
+	
+	$counter = 0
+	$loops = 50 # = (5 * 1000) / 100
+	try {
+		$loops = [Math]::Round(($Seconds * 1000) / $PollingFrequencyInMilliseconds)
+	}
+	catch { }
+
+	while (!$Host.UI.RawUI.KeyAvailable -and ($counter++ -lt $loops)) {
+		[Threading.Thread]::Sleep($PollingFrequencyInMilliseconds)
+	}
+}
+
 #endregion FUNCTIONS
 
 #region VARIABLES
@@ -86,6 +106,17 @@ Write-Host "B:    '$swapB'"
 
 Write-Host " * Determine state of files"
 
+# Check for correct paths
+if (!(Test-Path "$path\$swap0")) { throw "File not found: '$path\$swap0'" }
+if (!(Test-Path "$path\$swapA")) { 
+	if (Test-Path "$path\hosts_$swapA") { $swapA = "hosts_$swapA" }
+	else { throw "File not found: '$path\$swapA'" }
+}
+if (!(Test-Path "$path\$swapB")) { 
+	if (Test-Path "$path\hosts_$swapB") { $swapB = "hosts_$swapB" }
+	else { throw "File not found: '$path\$swapB'" }
+}
+	
 # Get content of files
 $swap0content = Get-Content "$path\$swap0"
 $swapAcontent = Get-Content "$path\$swapA"
@@ -129,8 +160,8 @@ Write-Host " * BOOYAH!"
 
 #endregion LOGIC
 
-# Keep the PowerShell window if this script ran from the CMD .bat file
+# Pause window for X seconds or until a key is pressed, but only if this script ran from the CMD .bat file
 if ($fromCMD) {
 	Write-Host ""
-	Pause
+	Start-PauseAndSleep -Seconds 5
 }
