@@ -425,6 +425,7 @@ MigrationBackup/
 !setvariablescustom.bat
 !shortcuts.bat
 !slack.bat
+!slack.ps1
 !snow.bat
 !speak.bat
 !speak.ps1

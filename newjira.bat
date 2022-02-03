@@ -29,9 +29,11 @@ SET PRIORITY="%PRIORITYFIELD%=%PRIORITYID%"
 SET BUSINESSVALUE="%BUSINESSVALUEFIELD%=%BUSINESSVALUEID%"
 
 REM Determine what commands to run
-IF "%~1"=="" GOTO :OpsTicket
-IF "%~1"=="ops" GOTO :OpsTicket
-IF "%~1"=="OPS" GOTO :OpsTicket
+IF "%~1"=="" GOTO :OpsTicketStory
+IF "%~1"=="ops" GOTO :OpsTicketStory
+IF "%~1"=="OPS" GOTO :OpsTicketStory
+IF "%~1"=="task" GOTO :OpsTicketTask
+IF "%~1"=="TASK" GOTO :OpsTicketTask
 IF "%~1"=="cr" GOTO :OpsChangeRequestTicket
 IF "%~1"=="CR" GOTO :OpsChangeRequestTicket
 IF "%~1"=="ec" GOTO :OpsEmergencyChangeTicket
@@ -50,9 +52,9 @@ IF "%~1"=="gc" SET INFRASTRUCTUREID=17136
 IF "%~1"=="GC" SET INFRASTRUCTUREID=17136
 IF "%~1"=="gcd" SET INFRASTRUCTUREID=17136
 IF "%~1"=="GCD" SET INFRASTRUCTUREID=17136
-GOTO :OpsTicket
+GOTO :OpsTicketStory
 
-:OpsTicket
+:OpsTicketStory
 SET PID=11900
 REM issuetype=3 -> Task
 REM issuetype=7 -> Story
@@ -60,6 +62,16 @@ IF NOT "%INFRASTRUCTUREID%"=="" (
   SET INFRASTRUCTURE="%INFRASTRUCTUREFIELD%=%INFRASTRUCTUREID%"
 )
 START %JIRAURL%/secure/CreateIssueDetails!init.jspa?pid=%PID%^&issuetype=7^&reporter=%JIRAUSER%^&assignee=%JIRAUSER%^&priority=6%ASSIGNEDDEV%%REQUESTOR%%INFRASTRUCTURE%
+GOTO :EOF
+
+:OpsTicketTask
+SET PID=11900
+REM issuetype=3 -> Task
+REM issuetype=7 -> Story
+IF NOT "%INFRASTRUCTUREID%"=="" (
+  SET INFRASTRUCTURE="%INFRASTRUCTUREFIELD%=%INFRASTRUCTUREID%"
+)
+START %JIRAURL%/secure/CreateIssueDetails!init.jspa?pid=%PID%^&issuetype=3^&reporter=%JIRAUSER%^&assignee=%JIRAUSER%^&priority=6%ASSIGNEDDEV%%REQUESTOR%%INFRASTRUCTURE%
 GOTO :EOF
 
 :OpsChangeRequestTicket
