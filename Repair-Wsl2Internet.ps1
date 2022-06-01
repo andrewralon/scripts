@@ -8,21 +8,27 @@
 # [network]
 # generateResolvConf = false
 
-Write-Output " * Disable IPv6"
+Write-Host " * Disable IPv6"
 bash -c "sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1"
 bash -c "sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1"
 
-Write-Output " * Fix broken internet in WSL2"
+Write-Host " * Get Guest IP"
 $guest_ip = bash -c "/sbin/ifconfig eth0 | egrep -o 'inet [0-9\.]+' | cut -d ' ' -f2"
-Write-Output "Guest IP:  $guest_ip"
+Write-Host "Guest IP:  $guest_ip"
+
+Write-Host " * Get Gateway IP"
 $gateway_ips = Get-NetIPAddress -InterfaceAlias "vEthernet (WSL)" | Select-Object IPAddress
 $gateway_ip = $gateway_ips[1].IPAddress
-Write-Output "Gateway (local WSL adapter) IP: $gateway_ip"
+Write-Host "Gateway (local WSL adapter) IP: $gateway_ip"
+
+Write-Host " * Fix broken internet in WSL2"
 bash -c "sudo ifconfig eth0 netmask 255.255.240.0"
 bash -c "sudo ip route add default via $gateway_ip"
-Write-Output " * Copy IP to bottom of /etc/resolv.conf"
+
+Write-Host " * Copy Gateway IP to bottom of /etc/resolv.conf"
 bash -c "sudo echo 'nameserver $gateway_ip' >> /etc/resolv.conf"
-Write-Output " * Run 'Enable-PSRemoting -SkipNetworkProfileCheck -Force'"
+
+Write-Host " * Run 'Enable-PSRemoting -SkipNetworkProfileCheck -Force'"
 Enable-PSRemoting -SkipNetworkProfileCheck -Force
 
-Write-Output " * Done"
+Write-Host " * Done"
