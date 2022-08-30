@@ -165,18 +165,26 @@ function Invoke-DoAllTheThings {
 	$thingsToProcess = $thingsToKill + $thingsToStart
 	$padIndex = ([string] $thingsToProcess.Count).Length
 
-	if ($Verbose) {
+	if (!$Verbose) {
 		Write-Output "--"
-		Write-Output "  thingsToStart.Count:   '$($thingsToStart.Count)'"
+		Write-Output " * thingsToStart.Count:   '$($thingsToStart.Count)'"
+		Write-Output " * thingsToKill.Count:    '$($thingsToKill.Count)'"
+		Write-Output " * thingsToProcess.Count: '$($thingsToProcess.Count)'"
+		Write-Output ""
+	}
+	else {
+		Write-Output "--"
+		Write-Output " * thingsToStart.Count:   '$($thingsToStart.Count)'"
 		foreach ($thing in $thingsToStart) { Write-Output $thing.Name }
 	
 		Write-Output ""
-		Write-Output "  thingsToKill.Count:    '$($thingsToKill.Count)'"
+		Write-Output " * thingsToKill.Count:    '$($thingsToKill.Count)'"
 		foreach ($thing in $thingsToKill) { Write-Output $thing.Name }
 		
 		Write-Output ""
-		Write-Output "  thingsToProcess.Count: '$($thingsToProcess.Count)'"
 		Write-Output "--"
+		Write-Output " * thingsToProcess.Count: '$($thingsToProcess.Count)'"
+		Write-Output ""
 	}
 	
 	$index = 1
