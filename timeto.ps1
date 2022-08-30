@@ -9,10 +9,11 @@
 #           timeto battery
 
 param(
-	[string] $Action = ""
-	, [string] $Command = $null
+	[string] $Action
 	, [switch] $Admin
-	, [switch] $Debug
+	, [Alias('v')][switch] $Verbose
+	, [Alias('p')][switch] $Pause
+	, [Alias('w')][switch] $WhatIf
 )
 
 #region CLASSES AND ENUMS
@@ -138,7 +139,8 @@ function Invoke-DoAllTheThings {
 	param( 
 		[Action] $Action
 		, [Thing[]] $ThingsToDo
-		, [bool] $Debug
+		, [switch] $PSCore
+		, [switch] $WhatIf
 	)
 	
 	$thingsToStart = @()
@@ -161,9 +163,9 @@ function Invoke-DoAllTheThings {
 	}
 	
 	$thingsToProcess = $thingsToKill + $thingsToStart
-	$padIndex = ([string]$thingsToProcess.Count).Length
+	$padIndex = ([string] $thingsToProcess.Count).Length
 
-	if ($Debug) {
+	if ($Verbose) {
 		Write-Output "--"
 		Write-Output "  thingsToStart.Count:   '$($thingsToStart.Count)'"
 		foreach ($thing in $thingsToStart) { Write-Output $thing.Name }
@@ -196,17 +198,17 @@ function Invoke-DoAllTheThings {
 		$verbP = $verb.PadRight($padVerb)
 		$nounP = $noun.PadRight(7)
 
-		Write-Output "  $(($indexP)) of $($thingsToProcess.Count) - $($verbP) $($nounP) - $($title)"
+		Write-Output "$(($indexP)) of $($thingsToProcess.Count) - $($verbP) $($nounP) - $($title)"
 
 		if ($thing.Action -notlike $Action) {
 			if ($thing.Object -like [App]) {
-				Invoke-KillApps @($thing)
+				Invoke-KillApps @($thing) -WhatIf:$WhatIf -PSCore:$PSCore
 			}
 			elseif ($thing.Object -like [Cmd]) {
 				# Do nothing
 			}
 			elseif ($thing.Object -like [Service]) {
-				Invoke-KillServices @($thing)
+				Invoke-KillServices @($thing) -WhatIf:$WhatIf -PSCore:$PSCore
 			}
 			else {
 				Write-Warning "Verb: Unknown object!"
@@ -214,13 +216,13 @@ function Invoke-DoAllTheThings {
 		}
 		elseif ($thing.Action -like $Action -and $thing.Start ) {
 			if ($thing.Object -like [App]) {
-				Invoke-StartApps @($thing)
+				Invoke-StartApps @($thing) -WhatIf:$WhatIf -PSCore:$PSCore
 			}
 			elseif ($thing.Object -like [Cmd]) {
-				Invoke-RunCommands @($thing)
+				Invoke-RunCommands @($thing) -WhatIf:$WhatIf -PSCore:$PSCore
 			}
 			elseif ($thing.Object -like [Service]) {
-				Invoke-StartServices @($thing)
+				Invoke-StartServices @($thing) -WhatIf:$WhatIf -PSCore:$PSCore
 			}
 			else {
 				Write-Warning "Verb: Unknown object"
@@ -236,34 +238,48 @@ function Invoke-DoAllTheThings {
 }
 
 function Invoke-KillServices {
-	param( [Thing[]] $ServicesToKill )
+	param(
+		[Thing[]] $ServicesToKill
+		, [switch] $PSCore
+		, [switch] $WhatIf
+	)
 
 	foreach ($thing in $ServicesToKill) {
 		if (Get-Service $thing.Object.Name -ErrorAction SilentlyContinue) {
-			Stop-Service $thing.Object.Name
+			Stop-Service $thing.Object.Name -WhatIf:$WhatIf
 		}
 	}
 }
 
 function Invoke-StartServices {
-	param( [Thing[]] $ServicesToStart )
+	param(
+		[Thing[]] $ServicesToStart
+		, [switch] $PSCore
+		, [switch] $WhatIf
+	)
 
 	foreach ($thing in $ServicesToStart) {
 		if (Get-Service $thing.Object.Name -ErrorAction SilentlyContinue) {
-			Start-Service $thing.Object.Name
+			Start-Service $thing.Object.Name -WhatIf:$WhatIf
 		}
 	}
 }
 
 function Invoke-KillApps {
-	param( [Thing[]] $AppsToKill )
+	param(
+		[Thing[]] $AppsToKill
+		, [switch] $PSCore
+		, [switch] $WhatIf
+	)
 
 	foreach ($thing in $AppsToKill) {
 		$processes = Get-Process $thing.Object.Name -ErrorAction SilentlyContinue
 		
 		foreach ($process in $processes) {
 			try {
-				$process.CloseMainWindow() | Out-Null
+				if (!$WhatIf) {
+					$process.CloseMainWindow() | Out-Null
+				}
 			}
 			catch {
 				Write-Warning "Exception during 'process.CloseMainWindow() | Out-Null'"
@@ -274,7 +290,7 @@ function Invoke-KillApps {
 		$process = Get-Process $thing.Object.Name -ErrorAction SilentlyContinue
 		if ($process) {
 			try {
-				Stop-Process -Name $process.Name
+				Stop-Process -Name $process.Name -WhatIf:$WhatIf
 			}
 			catch {
 				Write-Warning "Exception during 'Stop-Process -Name $($process.Name)'"
@@ -284,15 +300,33 @@ function Invoke-KillApps {
 }
 
 function Invoke-StartApps {
-	param( [Thing[]] $AppsToStart )
+	param(
+		[Thing[]] $AppsToStart
+		, [switch] $PSCore
+		, [switch] $WhatIf
+	)
 
 	foreach ($thing in $AppsToStart) {
 		if (!(Get-Process $thing.Object.Name -ErrorAction SilentlyContinue)) {
 			if ($thing.Object.Path -and $thing.Object.Arguments) {
-				Start-Process $thing.Object.Path $thing.Object.Arguments
+				if ($PSCore) {
+					Start-Process $thing.Object.Path $thing.Object.Arguments -WhatIf:$WhatIf
+				}
+				else {
+					if (!$WhatIf) {
+						Start-Process $thing.Object.Path $thing.Object.Arguments
+					}
+				}
 			}
 			elseif ($thing.Object.Path) {
-				Start-Process $thing.Object.Path
+				if ($PSCore) {
+					Start-Process $thing.Object.Path -WhatIf:$WhatIf
+				}
+				else {
+					if (!$WhatIf) {
+						Start-Process $thing.Object.Path
+					}
+				}
 			}
 			else {
 				Write-Warning "Unable to start. Path is empty!"
@@ -302,10 +336,16 @@ function Invoke-StartApps {
 }
 
 function Invoke-RunCommands {
-	param( [Thing[]] $CommandsToRun )
+	param(
+		[Thing[]] $CommandsToRun
+		, [switch] $PSCore
+		, [switch] $WhatIf
+	)
 
-	foreach ($thing in $CommandsToRun) {
-		Invoke-Expression -Command "$($thing.Object.Command)"
+	if (!$WhatIf) {
+		foreach ($thing in $CommandsToRun) {
+			Invoke-Expression -Command "$($thing.Object.Command)"
+		}
 	}
 }
 
@@ -322,7 +362,7 @@ $things = @(
 
 	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
-	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
+	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Evernote", "${env:USERPROFILE}\AppData\Local\Programs\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("EvernoteTray"))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("OneDrive", "${env:USERPROFILE}\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Slack", "${env:USERPROFILE}\AppData\Local\slack\slack.exe"))
@@ -330,7 +370,7 @@ $things = @(
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Discord", "${env:USERPROFILE}\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
-	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
+	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Evernote", "${env:USERPROFILE}\AppData\Local\Programs\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("EvernoteTray"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "${env:ProgramFiles(x86)}\Origin\Origin.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Snap Camera"))
@@ -340,7 +380,7 @@ $things = @(
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("BCompare"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", "--profile-directory='Default'"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "${env:ProgramFiles(x86)}\Evernote\Evernote\Evernote.exe"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Evernote", "${env:USERPROFILE}\AppData\Local\Programs\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("EvernoteTray"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Excel"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("GitHubDesktop"))
@@ -371,18 +411,32 @@ $things = @(
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
 	, [Thing]::new([Action]::Work, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
 )
+$PSVersion = $PSVersionTable.PSVersion.ToString()
+$PSCore = if ($PSVersion -ge 6) { $true } else { $false }
 
 #endregion VARIABLES
 
 #region LOGIC
 
 if ([Action].GetEnumNames() -icontains $Action) {
-	$thingsToDo = $things.Where( { $_.AsAdmin -like $Admin } )
 
+	$thingsToDo = $things.Where( { $_.AsAdmin -like $Admin } )
 	Write-Output "** TIME TO $($Action.ToUpper())! **"
-	Write-Output "Admin: '$($Admin)'"
-	
-	if ($Debug) {
+
+	if (!$Verbose) {
+		Write-Output "Admin:   '$($Admin)'"
+		Write-Output "WhatIf:  '$($WhatIf)'"
+		Write-Output "thingsToDo.Count: '$($thingsToDo.Count)'"
+	}
+	else {
+		Write-Output "Action:  '$($Action)'"
+		Write-Output "Admin:   '$($Admin)'"
+		Write-Output "Verbose: '$($Verbose)'"
+		Write-Output "Pause:   '$($Pause)'"
+		Write-Output "WhatIf:  '$($WhatIf)'"
+		Write-Output "PSCore:  '$($PSCore)'"
+		Write-Output "thingsToDo.Count: '$($thingsToDo.Count)'"
+
 		Write-Output "--"
 
 		$index = 1
@@ -397,14 +451,17 @@ if ([Action].GetEnumNames() -icontains $Action) {
 			if ($object.Arguments) { Write-Output "Arguments: '$($object.Arguments)'" }
 		}
 		
-		Write-Output ""
-		Write-Output "Action:           '$($Action)'"
-		Write-Output "Debug:            '$($Debug)'"
-		Write-Output "thingsToDo.Count: '$($thingsToDo.Count)'"
 		Write-Output "--"
+		Write-Output "Action:  '$($Action)'"
+		Write-Output "Admin:   '$($Admin)'"
+		Write-Output "Verbose: '$($Verbose)'"
+		Write-Output "Pause:   '$($Pause)'"
+		Write-Output "WhatIf:  '$($WhatIf)'"
+		Write-Output "PSCore:  '$($PSCore)'"
+		Write-Output "thingsToDo.Count: '$($thingsToDo.Count)'"
 	}
 
-	Invoke-DoAllTheThings $Action $thingsToDo $Debug
+	Invoke-DoAllTheThings $Action $thingsToDo -PSCore:$PSCore -WhatIf:$WhatIf
 }
 else {
 	Write-Output "** TIME TO.... $($Action)??? **"
@@ -412,13 +469,13 @@ else {
 }
 
 Write-Output ""
-Write-Output "BOOYAH!"
+Write-Output " * BOOYAH!"
+Write-Output ""
 
-if ($Debug) {
+if ($Pause) {
 	Pause
 }
 else {
-	Write-Output ""
 	Write-Output "Exiting in $secondsToWait seconds...."
 	Start-Sleep -Seconds $secondsToWait
 }

@@ -15,10 +15,10 @@ REM * The powershell script must be run twice, once as user and once as admin.
 SET FILENAME=%~n0
 
 REM Run as user
-START powershell.exe -Command "& '%FILENAME%.ps1' %*"
+START powershell.exe -Command "& { & '%FILENAME%.ps1' %* }"
 
 REM Run as admin
-START nircmdc.exe elevate powershell.exe -Command "& '%FILENAME%.ps1' -Admin %*"
+START nircmdc.exe elevate powershell.exe -Command "& { & '%FILENAME%.ps1' -Admin %* }"
 
 REM PAUSE
 REM EXIT
