@@ -364,26 +364,37 @@ function Invoke-RunCommands {
 $secondsToWait = 5
 $things = @(
 	# Action, Start, AsAdmin, Type
-	# [Thing]::new([Action]::<ACTION>, $<BOOL>, $<BOOL>, [<TYPE>]::(<PARAM1, PARAM2>))
+	# [Thing]::new([Action]::<ACTION>, $<BOOL>, $<BOOL>, [<TYPE>]::(<PARAM1>, <PARAM2>))
 
-	[Thing]::new([Action]::Work, $true, $true, [Service]::new("PanGPS"))
+	[Thing]::new([Action]::Battery, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 off -NoDelay -Quiet"))
 
 	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", '--profile-directory="Default"'))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Evernote", "${env:USERPROFILE}\AppData\Local\Programs\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("EvernoteTray"))
+	, [Thing]::new([Action]::Chill, $false, $false, [App]::new("KeePass", "${env:ProgramFiles(x86)}\KeePass Password Safe 2\KeePass.exe"))
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("OneDrive", "${env:USERPROFILE}\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
 	, [Thing]::new([Action]::Chill, $true, $false, [App]::new("Slack", "${env:USERPROFILE}\AppData\Local\slack\slack.exe"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 2"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
+	, [Thing]::new([Action]::Chill, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay -Quiet"))
+	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("ipconfig /flushdns"))
 
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Discord", "${env:USERPROFILE}\AppData\Local\Discord\Update.exe", "--processStart Discord.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Dropbox", "${env:ProgramFiles(x86)}\Dropbox\Client\Dropbox.exe", "/home"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("EpicGamesLauncher", "${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Evernote", "${env:USERPROFILE}\AppData\Local\Programs\Evernote\Evernote.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("EvernoteTray"))
+	, [Thing]::new([Action]::Play, $false, $false, [App]::new("KeePass", "${env:ProgramFiles(x86)}\KeePass Password Safe 2\KeePass.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Origin", "${env:ProgramFiles(x86)}\Origin\Origin.exe"))
 	, [Thing]::new([Action]::Play, $false, $false, [App]::new("Snap Camera"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Slack", "${env:USERPROFILE}\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Play, $true, $false, [App]::new("Steam", "${env:ProgramFiles(x86)}\Steam\steam.exe"))
+	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 1"))
+	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 2"))
+	, [Thing]::new([Action]::Play, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay -Quiet"))
+	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("ipconfig /flushdns"))
 
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("BCompare"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Chrome", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", "--profile-directory='Default'"))
@@ -392,32 +403,21 @@ $things = @(
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("EvernoteTray"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Excel"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("GitHubDesktop"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("KeePass"))
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("KeePass", "${env:ProgramFiles(x86)}\KeePass Password Safe 2\KeePass.exe"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("notepad++", "${env:ProgramFiles}\Notepad++\notepad++.exe"))
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("OneDrive", "${env:USERPROFILE}\AppData\Local\Microsoft\OneDrive\OneDrive.exe")) # Requires NON-admin
 	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Outlook", "${env:ProgramFiles(x86)}\Microsoft Office\root\Office16\OUTLOOK.EXE"))
+	, [Thing]::new([Action]::Work, $true, $true, [Service]::new("PanGPS"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Postman"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("RemoteDesktopManager64", "${env:ProgramFiles(x86)}\Devolutions\Remote Desktop Manager\RemoteDesktopManager64.exe"))
 	, [Thing]::new([Action]::Work, $false, $false, [App]::new("Slack", "${env:USERPROFILE}\AppData\Local\slack\slack.exe"))
 	, [Thing]::new([Action]::Work, $false, $true, [App]::new("Taskmgr"))
-	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "${env:USERPROFILE}\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))
-	
-	, [Thing]::new([Action]::Battery, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 off -NoDelay"))
-
-	, [Thing]::new([Action]::Chill, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
-	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
-	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 2"))
-	, [Thing]::new([Action]::Chill, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
-
-	, [Thing]::new([Action]::Play, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
-	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 1"))
-	# , [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("multimonitortool /disable 3"))
-	, [Thing]::new([Action]::Play, $true, $false, [Cmd]::new("ipconfig /flushdns"))
-
+	, [Thing]::new([Action]::Work, $true, $false, [App]::new("Teams", "${env:USERPROFILE}\AppData\Local\Microsoft\Teams\Update.exe", "--processStart Teams.exe"))	
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 1"))
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 2"))
 	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("multimonitortool /enable 3"))
-	, [Thing]::new([Action]::Work, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay"))
+	, [Thing]::new([Action]::Work, $true, $true, [Cmd]::new("Set-NetworkAdapterState.ps1 on -NoDelay -Quiet"))
+	, [Thing]::new([Action]::Work, $true, $false, [Cmd]::new("ipconfig /flushdns"))
 )
 $PSVersion = $PSVersionTable.PSVersion.ToString()
 $PSCore = if ($PSVersion -ge 6) { $true } else { $false }

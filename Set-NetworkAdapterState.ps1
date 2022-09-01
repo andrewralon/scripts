@@ -12,6 +12,7 @@
 param(
 	[string] $State = "restart"
 	, [switch] $NoDelay
+	, [switch] $Quiet
 )
 
 $name = "Wi-Fi"
@@ -20,50 +21,52 @@ $adapter = Get-NetAdapter -Name $name -ErrorAction SilentlyContinue
 $secondsToWait = 5
 
 if (!$adapter) {
-	Write-Output "Adapter not found: '$($name)'"
-	Write-Output "Searching for 'wireless' in the interface descriptions...."
+	if (!$Quiet) { Write-Host "Adapter not found: '$($name)'" }
+	if (!$Quiet) { Write-Host "Searching for 'wireless' in the interface descriptions...." }
 
 	$adapters = Get-NetAdapter -ErrorAction SilentlyContinue
 	$adapter = $adapters.Where( { $_.InterfaceDescription -like "*$backupTerm*" } ) | Select-Object -first 1
 
 	if ($adapter) {
-		Write-Output "Found adapter: '$($adapter.Name)'.... w00t!"
+		if (!$Quiet) { Write-Host "Found adapter: '$($adapter.Name)'.... w00t!" }
 	}
 }
 
 if ($adapter) {	
-	Write-Output "$($adapter.Name) status was '$($adapter.Status)'"
-	Write-Output "Desired state: '$State'"
+	if (!$Quiet) { Write-Host "$($adapter.Name) status was '$($adapter.Status)'" }
+	if (!$Quiet) { Write-Host "Desired state: '$State'" }
 
 	if ((($State -like "on" -or $State -like "start") -and ($adapter.Status -like "Up" -or $adapter.Status -like "Disconnected")) -or 
 		(($State -like "off" -or $State -like "stop") -and $adapter.Status -like "Disabled")) {
-		Write-Output "Adapter is already '$($adapter.Status)'...."
+		if (!$Quiet) { Write-Host "Adapter is already '$($adapter.Status)'...." }
 	}
 	else {
 		if ($State -like "off" -or $State -like "stop" -or $State -like "restart") {
-			Write-Output "Disabling now...."
+			if (!$Quiet) { Write-Host "Disabling now...." }
 			Disable-NetAdapter -Name $adapter.Name -Confirm:$false
 		} 
 		
 		if ($State -like "on" -or $State -like "start" -or $State -like "restart") {
-			Write-Output "Enabling now...."
+			if (!$Quiet) { Write-Host "Enabling now...." }
 			Enable-NetAdapter -Name $adapter.Name -Confirm:$false
 		}
 		
 		Start-Sleep -Seconds $secondsToWait
 		
 		$adapter = Get-NetAdapter -Name $adapter.Name -ErrorAction SilentlyContinue		
-		Write-Output "$($adapter.Name) status is now '$($adapter.Status)'"
+		if (!$Quiet) { Write-Host "$($adapter.Name) status is now '$($adapter.Status)'" }
 	}
 }
 else {
-	Write-Output "Adapter not found: '$name''"
+	Write-Warning "Adapter not found: '$name''"
 }
 
 if (!$NoDelay) {
-	Write-Output ""
-	Write-Output "Done"
-	Write-Output ""
-	Write-Output "Exiting in $secondsToWait seconds...."
+	if (!$Quiet) { 
+		Write-Host ""
+		Write-Host "Done"
+		Write-Host ""
+		Write-Host "Exiting in $secondsToWait seconds...."
+	}
 	Start-Sleep -Seconds $secondsToWait
 }
