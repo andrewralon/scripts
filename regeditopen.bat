@@ -16,7 +16,7 @@ SET /P REGPATH="Open regedit to path: "
 :EOF
 
 :GETPATH
-SET REGPATH=%1
+SET REGPATH=%*
 :EOF
 
 :RUN
